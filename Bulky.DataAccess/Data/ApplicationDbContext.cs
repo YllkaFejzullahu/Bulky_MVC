@@ -3,12 +3,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BulkyWeb.Data
 {
-    public class ApplicationDbContextcs : DbContext
+    public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContextcs(DbContextOptions<ApplicationDbContextcs> options) : base(options) { 
-
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
         }
-     public DbSet<Category> Categories {  get; set; }
+
+        public DbSet<Category> Categories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -16,9 +18,7 @@ namespace BulkyWeb.Data
                 new Category { Id = 1, Name = "Action", DisplayOrder = 1 },
                 new Category { Id = 2, Name = "SciFi", DisplayOrder = 2 },
                 new Category { Id = 3, Name = "History", DisplayOrder = 3 }
-
-
-                );
-        }
+            );
         }
     }
+}
