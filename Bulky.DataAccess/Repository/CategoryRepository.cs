@@ -12,20 +12,15 @@ namespace Bulky.DataAccess.Repository
         {
             _db = db;
         }
+        public void Save()
+        {
+            _db.SaveChanges(); 
+
+        }
 
         public void Update(Category obj)
         {
             _db.Categories.Update(obj);
-        }
-
-        public void Delete(Category obj)
-        {
-            _db.Categories.Remove(obj);
-        }
-
-        public void Save()
-        {
-            _db.SaveChanges(); // ✅ commit changes to database
         }
     }
 }

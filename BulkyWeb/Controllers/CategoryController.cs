@@ -9,23 +9,27 @@ namespace BulkyWeb.Controllers
     {
         private readonly ICategoryRepository _categoryRepo;
 
-        public CategoryController(ICategoryRepository categoryRepo)
+        public CategoryController(ICategoryRepository db)
         {
-            _categoryRepo = categoryRepo;
+            _categoryRepo = db;
         }
 
-        // LIST ALL CATEGORIES
         public IActionResult Index()
         {
-            var categories = _categoryRepo.GetAll().ToList();
-            return View(categories);
+           List<Category> objCategoryList = _categoryRepo.GetAll().ToList();
+            return View(objCategoryList);
         }
 
-        // SHOW CREATE FORM
-        public IActionResult Create() => View();
 
-        // HANDLE CREATE FORM POST
+        // GET: Category/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Category/Create
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(Category obj)
         {
             if (obj.Name == obj.DisplayOrder.ToString())
@@ -36,8 +40,8 @@ namespace BulkyWeb.Controllers
 
             if (ModelState.IsValid)
             {
-                _categoryRepo.Add(obj); // add to DbContext
-                _categoryRepo.Save();   // commit to database
+                _categoryRepo.Add(obj);
+                _categoryRepo.Save();
                 TempData["success"] = "Category created successfully!";
                 return RedirectToAction("Index");
             }
@@ -45,33 +49,37 @@ namespace BulkyWeb.Controllers
             return View(obj);
         }
 
-        // SHOW EDIT FORM
+
         public IActionResult Edit(int? id)
         {
-            if (id == null || id == 0) return NotFound();
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            Category? categoryFromDb = _categoryRepo.Get(c => c.Id == id);
+            if (categoryFromDb == null)
+            {
+                return NotFound();
+            }
 
-            var category = _categoryRepo.Get(c => c.Id == id);
-            if (category == null) return NotFound();
-
-            return View(category);
+            return View(categoryFromDb);
         }
 
-        // HANDLE EDIT POST
+
         [HttpPost]
         public IActionResult Edit(Category obj)
         {
             if (ModelState.IsValid)
             {
-                _categoryRepo.Update(obj); // mark entity as updated
-                _categoryRepo.Save();       // commit changes
+                _categoryRepo.Update(obj);
+                _categoryRepo.Save();
                 TempData["success"] = "Category updated successfully!";
                 return RedirectToAction("Index");
             }
 
-            return View(obj);
+            return View();
         }
 
-        // SHOW DELETE CONFIRMATION
         public IActionResult Delete(int? id)
         {
             if (id == null || id == 0) return NotFound();
@@ -82,15 +90,16 @@ namespace BulkyWeb.Controllers
             return View(category);
         }
 
-        // HANDLE DELETE POST
+
+
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePOST(int? id)
         {
             var obj = _categoryRepo.Get(c => c.Id == id);
             if (obj == null) return NotFound();
 
-            _categoryRepo.Delete(obj); // remove entity
-            _categoryRepo.Save();       // commit changes
+            _categoryRepo.Remove(obj); 
+            _categoryRepo.Save();       
             TempData["success"] = "Category deleted successfully!";
             return RedirectToAction("Index");
         }

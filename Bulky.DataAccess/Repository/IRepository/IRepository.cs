@@ -8,6 +8,7 @@ namespace Bulky.DataAccess.Repository.IRepository
         T Get(Expression<Func<T, bool>> filter);
         void Add(T entity);
         void Remove(T entity);
-        void Update(T entity);
+
+        void RemoveRange(IEnumerable<T> entity);
     }
 }
